@@ -916,20 +916,22 @@ WaitForNMI:				; $C7B7
 ; Returns data in A
 QueryMysteryHardware:	; $C7C0
 	LDA #0
-	STA byte_401E		; ? Send device command?
+	STA byte_401E		; Send device command?
 
--	LDA byte_4019		; ? Check device status?
-	AND #$C0
-	CMP #$80
-	BNE -				; ? Not ready, loop?
-	LDA byte_4018		; ? Device response?
-	PHA					; Save response
-	LDA #$40			; ? Load next command?
-	STA byte_401E		; ? Send command?
+-	LDA byte_4019		; Check status register
+	AND #$C0			; Check top two bits
+	CMP #$80			; Is only the top bit set?
+	BNE -				; If not, wait
 
--	LDA byte_4019		; ? Check device status?
-	AND #$80
-	BNE -				; ? Wait for device acknowledge?
+	LDA byte_4018		; Read device response?
+	PHA					; Store response on stack
+	LDA #$40			; Load new command
+	STA byte_401E		; Send device command
+
+-	LDA byte_4019		; Check device status
+	AND #$80			; Top bit clear?
+	BNE -				; If not, wait
+
 	PLA					; Pull response
 	RTS
 
