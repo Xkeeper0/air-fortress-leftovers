@@ -30,6 +30,16 @@ MACRO SetPPUBuffer addr
 ENDM
 
 ;
+; Macro to set the PPU address
+;
+MACRO SetPPUAddress addr
+	LDA #>addr
+	STA PPUADDR
+	LDA #<addr
+	STA PPUADDR
+ENDM
+
+;
 ; Simple macro to run WaitForNMI a while
 ;
 MACRO DelayFrames f

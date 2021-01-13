@@ -165,10 +165,8 @@ u_C383:							; $C383 - unreferenced
 ; =================================
 UpdateTileEditorAttributes:		; $C38B
 	JSR WaitForNMI
-	LDA #$23
-	STA PPUADDR
-	LDA #$C0
-	STA PPUADDR
+	SetPPUAddress $23C0
+
 	LDX PaletteRAM_IndexHigh2Bits
 	LDA Palette_NametableAttributes, X
 	LDX #$28
@@ -190,10 +188,7 @@ u_C3A8:					; $C3A8 - unreferenced
 	STA byte_0E
 	LDA #$A0
 	STA byte_0F
-	LDA #$20
-	STA PPUADDR
-	LDA #0
-	STA PPUADDR
+	SetPPUAddress $2000
 	LDX #$10
 	LDY #0
 
@@ -463,10 +458,7 @@ loc_C4F0:				; $C4F0
 	STA PaletteBuffer+#$C, X
 
 ++	JSR WaitForNMI
-	LDA #$3F
-	STA PPUADDR
-	LDA #0
-	STA PPUADDR
+	SetPPUAddress $3F00
 	LDA SpriteOrBG
 	EOR #1
 	ASL A
@@ -943,10 +935,7 @@ QueryMysteryHardware:	; $C7C0
 
 ; =================================
 ClearBGAndSprites:		; $C7E0
-	LDA #$20
-	STA PPUADDR
-	LDA #0
-	STA PPUADDR
+	SetPPUAddress $2000
 	LDX #4
 	LDY #0
 	LDA TileEditor_SolidTileNumber
@@ -955,10 +944,7 @@ ClearBGAndSprites:		; $C7E0
 	BNE -
 	DEX
 	BNE -
-	LDA #$23
-	STA PPUADDR
-	LDA #$C0
-	STA PPUADDR
+	SetPPUAddress $23C0
 	LDY #$40
 	LDX PaletteRAM_IndexHigh2Bits
 	LDA Palette_NametableAttributes, X
@@ -1005,10 +991,8 @@ u_C81B:					; $C81B - unreferenced
 +	DEC byte_15
 	BNE --
 
-	LDA #$21
-	STA PPUADDR
-	LDA #$E4
-	STA PPUADDR
+	SetPPUAddress $21E4
+
 	LDX TileEditor_SolidTileNumber
 	INX
 	STX PPUDATA
@@ -1105,10 +1089,7 @@ UpdateTilePickerVRAM:		; $C8B8
 
 ; =================================
 SetPPUAddressTo2000:
-	LDA #$20
-	STA PPUADDR
-	LDA #0
-	STA PPUADDR
+	SetPPUAddress $2000
 	RTS
 ; End of function SetPPUAddressTo2000
 
@@ -1311,20 +1292,15 @@ loc_C98E:				; $C98E (used for branch below)
 	LDA #0
 	STA PPUMASK
 	LDX #0
-	LDA #$22
-	STA PPUADDR
-	LDA #$80
-	STA PPUADDR
+	SetPPUAddress $2280
+
 
 -	LDA byte_300, X
 	STA PPUDATA
 	INX
 	BNE -
 
-	LDA #$23
-	STA PPUADDR
-	LDA #$E8
-	STA PPUADDR
+	SetPPUAddress $23E8
 
 -	LDA byte_400, X
 	STA PPUDATA
@@ -1579,10 +1555,8 @@ u_CF84:				; $CF84
 	STA byte_0F
 	LDA #0
 	STA byte_0E
-	LDA #$10
-	STA PPUADDR
-	LDA #0
-	STA PPUADDR
+	SetPPUAddress $1000
+
 	LDY #0
 	LDA #$10
 	STA byte_14
@@ -1637,10 +1611,8 @@ u_CFB1:					; $CFB1 - unreferenced
 	DEY
 	BPL -
 
-	LDA #$F
-	STA PPUADDR
-	LDA #$B0
-	STA PPUADDR
+	SetPPUAddress $0FB0
+
 	LDY #0
 	LDA byte_450, Y
 	; STA ????
