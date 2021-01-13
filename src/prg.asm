@@ -15,7 +15,7 @@ Start:
 
 DoNothing:
 	INC $FF
-	JSR unref_C3A8
+	JSR u_C3A8
 	JMP DoNothing
 
 .include "src/data/palettes.asm"

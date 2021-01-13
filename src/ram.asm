@@ -2,9 +2,9 @@ PPUCtrlMirror:			; $0000
 	.dsb 1
 PPUMaskMirror:			; $0001
 	.dsb 1
-PPUScrollX:		; $0002
+PPUScrollY:		; $0002
 	.dsb 1
-PPUScrollY:		; $0003
+PPUScrollX:		; $0003
 	.dsb 1
 NMIFlag:		; $0004
 	.dsb 1
@@ -21,9 +21,9 @@ JoypadRepeatTimer:	; $000B
 
 SpriteOrBG:		; $D
 	.dsb 1
-byte_E:		; $E
+byte_0E:		; $E
 	.dsb 1
-byte_F:		; $F
+byte_0F:		; $F
 	.dsb 1
 byte_10:		; $10
 	.dsb 1
@@ -49,14 +49,14 @@ byte_1A:		; $1A
 	.dsb 1
 byte_1B:		; $1B
 	.dsb 1
-byte_1C:		; $1C
+MysteryHardwareResponse:		; $1C
 	.dsb 1
-word_1D:		; $1D
+IndirectJumpDest:		; $1D
 	.dsb 2
 TileEditor_SolidTileNumber:		; $1F
 	.dsb 1
 
-EditMode:		; $0020
+TileOrPaletteMode:		; $0020
 	.dsb 1
 
 TileEditor_CursorX:		; $21
@@ -67,27 +67,27 @@ TilePicker_CursorYX:		; $23
 	.dsb 1
 byte_24:		; $24
 	.dsb 1
-byte_25:		; $25
+TilePicker_CursorY:		; $25
 	.dsb 1
 byte_26:		; $26
 	.dsb 1
 byte_27:		; $27
 	.dsb 1
-byte_28:		; $28
+PaletteRAM_IndexHigh2Bits:		; $28
 	.dsb 1
 byte_29:		; $29
 	.dsb 1
 byte_2A:		; $2A
 	.dsb 1
-byte_2B:		; $2B
+Palette_Luminance:		; $2B
 	.dsb 1
-byte_2C:		; $2C
+Palette_Hue:		; $2C
 	.dsb 1
-byte_2D:		; $2D
+Palette_Color:		; $2D
 	.dsb 1
-byte_2E:		; $2E
+PaletteRAM_IndexLow2Bits:		; $2E
 	.dsb 1
-byte_2F:		; $2F
+PaletteRAM_Inded:		; $2F
 	.dsb 1
 byte_30:		; $30
 	.dsb 1
@@ -116,13 +116,13 @@ byte_7C:		; $7C
 
 .pad $00b4, $00
 
-byte_B4:		; $B4
+TileEditor_UpdateVRAMFlag:		; $B4
 	.dsb 1
 byte_B5:		; $B5
 	.dsb 1
 byte_B6:		; $B6
 	.dsb 1
-byte_B7:		; $B7
+TilePicker_UpdateVRAMFlag:		; $B7
 	.dsb 1
 
 

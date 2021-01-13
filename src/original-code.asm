@@ -1,43 +1,60 @@
-; Referenced data that no longer exists (here)
+; Leftover / unused tile editor code from the
+; Air Fortress FDS prototype, contained on the
+; TITLE side of the disk
 
-loc_C05D	= $C05D
-unk_C248	= $C248
-unk_B000	= $B000
-unk_D008	= $D008
+; Leftover code starts at $C2DD ...
+; Previous code before this part is lost,
+; likely overwritten by other data (?)
+
+; Unreferenced calls are labeled with
+; "unreferenced" in comment; if not labeled,
+; they are given "u_XXXX" as a label
+
+; Mystery hardware device possibly connected to
+; EXT port required as well;
+; see QueryMysteryHardware func
+
+; Referenced data that no longer exists:
+; (marked here for label keeping)
+PaletteBuffer				= $B000
+Palette_NametableAttributes	= $C249
+lost_code_C05E				= $C05E
+lost_data_D008				= $D008
 
 
-; ---------------------------------------------------------------------------
-
-
+MoveCursorRight:	; $C2DD - unreferenced
 	LDA TileEditor_CursorX
 	CMP #7
-	BEQ locret_C2E5
+	BEQ +
 	INC TileEditor_CursorX
 
-locret_C2E5:
-	RTS
-; ---------------------------------------------------------------------------
++
+-	RTS
+; ---------------------------------
+MoveCursorLeft:		; $C2E6 - unreferenced
 	LDA TileEditor_CursorX
-	BEQ locret_C2E5
+	BEQ -
 	DEC TileEditor_CursorX
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C2ED:
+MoveCursorDown:		; $C2ED
 	LDA TileEditor_CursorY
 	CMP #7
-	BEQ locret_C2E5
+	BEQ -
 	INC TileEditor_CursorY
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
+MoveCursorUp:		; $C2F6 - unreferenced
 	LDA TileEditor_CursorY
-	BEQ locret_C2E5
+	BEQ -
 	DEC TileEditor_CursorY
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_C2FD				; $C2FD - unreferenced
 	LDA #0
 	STA TileEditor_CursorX
-	BEQ loc_C2ED
+	BEQ MoveCursorDown
 	LDA #0
 	BEQ loc_C311
 	LDA #1
@@ -46,7 +63,7 @@ loc_C2ED:
 	BNE loc_C311
 	LDA #3
 
-loc_C311:
+loc_C311:				; $C311			; $C311
 	TAY
 	LDA TileEditor_CursorY
 	ASL A
@@ -56,44 +73,48 @@ loc_C311:
 	TAX
 	STY TileEditor_Buffer, X
 	LDA #2
-	STA byte_B4
+	STA TileEditor_UpdateVRAMFlag
 	LDA TileEditor_CursorX
 	CMP #7
-	BEQ locret_C328
+	BEQ +
 	INC TileEditor_CursorX
 
-locret_C328:
-	RTS
-; ---------------------------------------------------------------------------
++	RTS
+; ---------------------------------
+u_C329:				; $C329 - unreferenced
 	LDA #0
-	BEQ loc_C337
+	BEQ +
+u_C32D:				; $C32D - unreferenced
 	LDA #1
-	BNE loc_C337
+	BNE +
+u_C331:				; $C331 - unreferenced
 	LDA #2
-	BNE loc_C337
+	BNE +
+u_C335:				; $C335 - unreferenced
 	LDA #3
 
-loc_C337:
-	LDX #$3F
++	LDX #$3F
 
-loc_C339:
-	STA TileEditor_Buffer, X
+-	STA TileEditor_Buffer, X
 	DEX
-	BPL loc_C339
+	BPL -
 	LDA #2
-	STA byte_B4
+	STA TileEditor_UpdateVRAMFlag
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_C343:				; $C343 - unreferenced
 	LDA #0
-	BEQ loc_C351
+	BEQ +
+u_C347:				; $C347 - unreferenced
 	LDA #1
-	BNE loc_C351
+	BNE +
+u_C34B:				; $C34B - unreferenced
 	LDA #2
-	BNE loc_C351
+	BNE +
+u_C34F:				; $C34F - unreferenced
 	LDA #3
 
-loc_C351:
-	STA byte_14
++	STA byte_14					; Save selected color as color A
 	LDA TileEditor_CursorY
 	ASL A
 	ASL A
@@ -101,69 +122,69 @@ loc_C351:
 	ORA TileEditor_CursorX
 	TAX
 	LDA TileEditor_Buffer, X
-	STA byte_15
-	LDX #$3F
+	STA byte_15					; Save cursor pixel as color B
+	LDX #$3F					; Start at last pixel
 
-loc_C361:
-	LDA TileEditor_Buffer, X
-	CMP byte_14
-	BNE loc_C36E
-	LDA byte_15
-	STA TileEditor_Buffer, X
-	JMP loc_C376
-; ---------------------------------------------------------------------------
+loc_C361:				; $C361						; $C361
+	LDA TileEditor_Buffer, X	; Load pixel
+	CMP byte_14					; Compare pixel with color A
+	BNE loc_C36E				; If pixel != color A, move to next check
+	LDA byte_15					; If pixel == color A, get color B
+	STA TileEditor_Buffer, X	; Replace pixel wtih color B
+	JMP +						; Move to next pixel
+; ---------------------------------
 
-loc_C36E:
-	CMP byte_15
-	BNE loc_C376
-	LDA byte_14
-	STA TileEditor_Buffer, X
+loc_C36E:				; $C36E						; $C36E
+	CMP byte_15					; Compare pixel with color B
+	BNE +				; If pixel != color B, move to next pixel
+	LDA byte_14					; If pixel == color B, get color A
+	STA TileEditor_Buffer, X	; Replace pixel with color A
 
-loc_C376:
-	DEX
++	DEX
 	BPL loc_C361
 	LDA #2
-	STA byte_B4
+	STA TileEditor_UpdateVRAMFlag
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_C37E:							; $C37E - unreferenced
 	LDA #1
-	STA EditMode
+	STA TileOrPaletteMode
 	RTS
-; ---------------------------------------------------------------------------
-	INC byte_28
-	LDA byte_28
+; ---------------------------------
+u_C383:							; $C383 - unreferenced
+	INC PaletteRAM_IndexHigh2Bits
+	LDA PaletteRAM_IndexHigh2Bits
 	AND #3
-	STA byte_28
+	STA PaletteRAM_IndexHigh2Bits
 
-; =============== S U B R O U T I N E =======================================
-sub_C38B:
+; =================================
+UpdateTileEditorAttributes:		; $C38B
 	JSR WaitForNMI
 	LDA #$23
 	STA PPUADDR
 	LDA #$C0
 	STA PPUADDR
-	LDX byte_28
-	LDA unk_C248+1, X
+	LDX PaletteRAM_IndexHigh2Bits
+	LDA Palette_NametableAttributes, X
 	LDX #$28
 
-loc_C39F:
-	STA PPUDATA
+-	STA PPUDATA
 	DEX
-	BNE loc_C39F
+	BNE -
 	JMP SetPPUAddressTo2000
-; End of function sub_C38B
+; End of function UpdateTileEditorAttributes
 
-; ---------------------------------------------------------------------------
-unref_C3A8:
+; ---------------------------------
+u_C3A8:					; $C3A8 - unreferenced
 
 	JSR WaitForNMI
 	LDA #0
 	STA PPUMASK
-	JSR sub_C7E0
+	JSR ClearBGAndSprites
 	LDA #0
-	STA byte_E
+	STA byte_0E
 	LDA #$A0
-	STA byte_F
+	STA byte_0F
 	LDA #$20
 	STA PPUADDR
 	LDA #0
@@ -171,12 +192,12 @@ unref_C3A8:
 	LDX #$10
 	LDY #0
 
-loc_C3C9:
-	LDA (byte_E), Y
+loc_C3C9:				; $C3C9
+	LDA (byte_0E), Y
 	STA PPUDATA
-	INC byte_E
+	INC byte_0E
 	BNE loc_C3C9
-	INC byte_F
+	INC byte_0F
 	JSR WaitForNMI
 	DEX
 	BNE loc_C3C9
@@ -185,36 +206,32 @@ loc_C3C9:
 	LDA PPUMaskMirror
 	STA PPUMASK
 
-loc_C3E5:
-	JSR MysteryHardwareInterface
-	STA byte_1C
+loc_C3E5:				; $C3E5
+	JSR QueryMysteryHardware
+	STA MysteryHardwareResponse
 	LDX #4
 
-loc_C3EC:
-	LDA unk_C40C, X
-	CMP byte_1C
+-	LDA unk_C40C, X
+	CMP MysteryHardwareResponse
 	BEQ loc_C3F9
 	DEX
-	BPL loc_C3EC
+	BPL -
 	JMP loc_C3E5
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C3F9:
+loc_C3F9:				; $C3F9
 	LDA JumpTable_C40C_Lo, X
-	STA word_1D
-
-loc_C3FE:
+	STA IndirectJumpDest
 	LDA JumpTable_C415_Hi, X
-	STA word_1D+1
+	STA IndirectJumpDest+1
 	JSR sub_C409
 	JMP loc_C3E5
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 sub_C409:
-	JMP (word_1D)
-; End of function sub_C409
+	JMP (IndirectJumpDest)
 
-; ---------------------------------------------------------------------------
+; ---------------------------------
 unk_C40C:
 	.db  $B
 	.db  $C
@@ -222,118 +239,112 @@ unk_C40C:
 	.db   8
 	.db $21
 JumpTable_C40C_Lo:
-	.db <loc_C41B
-	.db <loc_C42E
-	.db <loc_C431
-	.db <loc_C444
-	.db <loc_C447
+	.db <IncrasePPUScrollY
+	.db <DecreasePPUScrollX
+	.db <DecreasePPUScrollY
+	.db <IncreasePPUScrollX
+	.db <ResetPPUScrollAndDie
 JumpTable_C415_Hi:
-	.db >loc_C41B
-	.db >loc_C42E
-	.db >loc_C431
-	.db >loc_C444
-	.db >loc_C447
-; ---------------------------------------------------------------------------
+	.db >IncrasePPUScrollY
+	.db >DecreasePPUScrollX
+	.db >DecreasePPUScrollY
+	.db >IncreasePPUScrollX
+	.db >ResetPPUScrollAndDie
+; ---------------------------------
 
-loc_C41B:
-	INC PPUScrollX
-	LDA PPUScrollX
+IncrasePPUScrollY:				; $C41B
+	INC PPUScrollY
+	LDA PPUScrollY
 	CMP #$78
-	BNE loc_C425
+	BNE +
 	LDA #$80
 
-loc_C425:
-	CMP #$F8
-	BNE loc_C42B
++	CMP #$F8
+	BNE +
 	LDA #0
 
-loc_C42B:
-	STA PPUScrollX
++	STA PPUScrollY
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C42E:
-	DEC PPUScrollY
-	RTS
-; ---------------------------------------------------------------------------
-
-loc_C431:
+DecreasePPUScrollX:				; $C42E
 	DEC PPUScrollX
-	LDA PPUScrollX
+	RTS
+; ---------------------------------
+
+DecreasePPUScrollY:				; $C431
+	DEC PPUScrollY
+	LDA PPUScrollY
 	CMP #$7F
-	BNE loc_C43B
+	BNE +
 	LDA #$77
-
-loc_C43B:
-	CMP #$FF
-	BNE loc_C441
++	CMP #$FF
+	BNE +
 	LDA #$F7
-
-loc_C441:
-	STA PPUScrollX
++	STA PPUScrollY
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C444:
-	INC PPUScrollY
+IncreasePPUScrollX:				; $C444
+	INC PPUScrollX
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C447:
+ResetPPUScrollAndDie:				; $C447
 	PLA
 	PLA
 	LDA #0
-	STA PPUScrollX
 	STA PPUScrollY
+	STA PPUScrollX
+	JMP lost_code_C05E
 
-loc_C44F:
-	JMP loc_C05D+1
-; ---------------------------------------------------------------------------
+; ---------------------------------
+ToggleSpriteOrBG:		; $C452 - unreferenced
 	LDA SpriteOrBG
 	EOR #1
 	STA SpriteOrBG
-	JMP loc_C05D+1
-; ---------------------------------------------------------------------------
-	LDA byte_25
+	JMP lost_code_C05E
+; ---------------------------------
+u_C45B:					; $C45B - unreferenced
+	LDA TilePicker_CursorY
 	ASL A
 	ASL A
 	ASL A
 	ASL A
 	ORA #$B
 	STA TileEditor_SolidTileNumber
-	JMP loc_C05D+1
-; ---------------------------------------------------------------------------
-	JSR sub_C56B
+	JMP lost_code_C05E
+; ---------------------------------
 
-loc_C46B:
-	JSR WaitForNMI
-	JSR sub_C4B2
-	JSR MysteryHardwareInterface
-	STA byte_1C
+u_C468:					; $C468
+	JSR UpdatePaletteValuesForDisplay
+
+--	JSR WaitForNMI
+	JSR UpdatePaletteCursorAndDigits
+	JSR QueryMysteryHardware
+	STA MysteryHardwareResponse
 	LDX #8
 
-loc_C478:
-	LDA unk_C497, X
-	CMP byte_1C
-	BEQ loc_C484
+-	LDA unk_C497, X
+	CMP MysteryHardwareResponse
+	BEQ +
 	DEX
-	BPL loc_C478
-	BMI loc_C46B
+	BPL -
+	BMI --
 
-loc_C484:
-	LDA JumpTable_C4A0_Lo, X
-	STA word_1D
++	LDA JumpTable_C4A0_Lo, X
+	STA IndirectJumpDest
 	LDA JumpTable_C4A0_Hi, X
-	STA word_1D+1
-	JSR sub_C494
-	JMP loc_C46B
+	STA IndirectJumpDest+1
+	JSR IndirectJump
+	JMP --
 
-; =============== S U B R O U T I N E =======================================
-sub_C494:
-	JMP (word_1D)
-; End of function sub_C494
+; =================================
+IndirectJump:
+	JMP (IndirectJumpDest)
+; End of function IndirectJump
 
-; ---------------------------------------------------------------------------
+; ---------------------------------
 unk_C497:
 	.db  $B
 	.db  $C
@@ -345,113 +356,108 @@ unk_C497:
 	.db $3B
 	.db $23
 JumpTable_C4A0_Lo:
-	.db <loc_C4DF
-	.db <loc_C4E4
-	.db <loc_C4E9
-	.db <loc_C4EE
-	.db <loc_C551
-	.db <loc_C556
-	.db <loc_C55B
-	.db <loc_C569
-	.db <loc_C596
+	.db <DecreasePaletteHue
+	.db <IncreasePaletteLuminance
+	.db <IncreasePaletteHue
+	.db <DecreasePaletteLuminance
+	.db <DecreasePaletteRAM_IndexHigh2Bits
+	.db <IncreasePaletteRAM_IndexLow2Bits
+	.db <IncreasePaletteRAM_IndexHigh2Bits
+	.db <DecreasePaletteRAM_IndexLow2Bits
+	.db <PullATwiceAndReturn
 JumpTable_C4A0_Hi:
-	.db >loc_C4DF
-	.db >loc_C4E4
-	.db >loc_C4E9
-	.db >loc_C4EE
-	.db >loc_C551
-	.db >loc_C556
-	.db >loc_C55B
-	.db >loc_C569
-	.db >loc_C596
+	.db >DecreasePaletteHue
+	.db >IncreasePaletteLuminance
+	.db >IncreasePaletteHue
+	.db >DecreasePaletteLuminance
+	.db >DecreasePaletteRAM_IndexHigh2Bits
+	.db >IncreasePaletteRAM_IndexLow2Bits
+	.db >IncreasePaletteRAM_IndexHigh2Bits
+	.db >DecreasePaletteRAM_IndexLow2Bits
+	.db >PullATwiceAndReturn
 
-; =============== S U B R O U T I N E =======================================
-sub_C4B2:
+; =================================
+UpdatePaletteCursorAndDigits:		; $C46E
 	LDA #$77
 	STA byte_200
-	LDA byte_2E
+	LDA PaletteRAM_IndexLow2Bits	; Update palette index cursor
 	ASL A
 	ASL A
 	ASL A
 	ADC #$20
 	STA byte_203
-	LDA #0
+	LDA #0							; Tile 00 (checkerboard)
 	STA byte_201
-	LDX byte_202
+	LDX byte_202					; Cycle the color
 	INX
 	TXA
 	AND #3
 	STA byte_202
-	LDA byte_2C
+	LDA Palette_Hue					; Update palette hue digit
 	ORA #$10
 	STA byte_21D
-	LDA byte_2B
+	LDA Palette_Luminance			; Update palette luminance digit
 	ORA #$10
 	STA byte_219
 	RTS
-; End of function sub_C4B2
+; End of function UpdatePaletteCursorAndDigits
 
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C4DF:
-	DEC byte_2C
+DecreasePaletteHue:				; $C4DF
+	DEC Palette_Hue
 	JMP loc_C4F0
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C4E4:
-	INC byte_2B
+IncreasePaletteLuminance:		; $C4E4
+	INC Palette_Luminance
 	JMP loc_C4F0
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C4E9:
-	INC byte_2C
+IncreasePaletteHue:				; $C4E9
+	INC Palette_Hue
 	JMP loc_C4F0
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C4EE:
-	DEC byte_2B
+DecreasePaletteLuminance:		; $C4EE
+	DEC Palette_Luminance
 
-loc_C4F0:
-	LDA byte_2C
+loc_C4F0:				; $C4F0
+	LDA Palette_Hue				; Update palette buffer and RAM
 	AND #$F
-	STA byte_2C
-	LDA byte_2B
+	STA Palette_Hue
+	LDA Palette_Luminance
 	AND #3
-	STA byte_2B
-	LDA byte_2B
+	STA Palette_Luminance
+	LDA Palette_Luminance
 	ASL A
 	ASL A
-
-loc_C500:
 	ASL A
 	ASL A
-	ORA byte_2C
-	STA byte_2D
+	ORA Palette_Hue
+	STA Palette_Color
 	LDA SpriteOrBG
 	EOR #1
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	LDX byte_2E
-	BEQ loc_C51D
-	ORA byte_2F
+	LDX PaletteRAM_IndexLow2Bits
+	BEQ +
+	ORA PaletteRAM_Inded
 	TAX
-	LDA byte_2D
-	STA unk_B000, X
-	JMP loc_C52C
-; ---------------------------------------------------------------------------
+	LDA Palette_Color
+	STA PaletteBuffer, X
+	JMP ++
 
-loc_C51D:
-	TAX
-	LDA byte_2D
-	STA unk_B000+#$0, X
-	STA unk_B000+#$4, X
-	STA unk_B000+#$8, X
-	STA unk_B000+#$C, X
++	TAX
+	LDA Palette_Color
+	STA PaletteBuffer+#$0, X
+	STA PaletteBuffer+#$4, X
+	STA PaletteBuffer+#$8, X
+	STA PaletteBuffer+#$C, X
 
-loc_C52C:
-	JSR WaitForNMI
+++	JSR WaitForNMI
 	LDA #$3F
 	STA PPUADDR
 	LDA #0
@@ -465,231 +471,224 @@ loc_C52C:
 	TAX
 	LDY #$10
 
-loc_C544:
-	LDA unk_B000, X
+-	LDA PaletteBuffer, X
 	STA PPUDATA
 	INX
 	DEY
-	BNE loc_C544
+	BNE -
 	JMP SetPPUAddressTo2000
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C551:
-	DEC byte_28
-	JMP loc_C55D
-; ---------------------------------------------------------------------------
+DecreasePaletteRAM_IndexHigh2Bits:				; $C551
+	DEC PaletteRAM_IndexHigh2Bits
+	JMP +
+; ---------------------------------
 
-loc_C556:
-	INC byte_2E
-	JMP sub_C56B
-; ---------------------------------------------------------------------------
+IncreasePaletteRAM_IndexLow2Bits:				; $C556
+	INC PaletteRAM_IndexLow2Bits
+	JMP UpdatePaletteValuesForDisplay
+; ---------------------------------
 
-loc_C55B:
-	INC byte_28
+IncreasePaletteRAM_IndexHigh2Bits:				; $C55B
+	INC PaletteRAM_IndexHigh2Bits
 
-loc_C55D:
-	LDA byte_28
++	LDA PaletteRAM_IndexHigh2Bits
 	AND #3
-	STA byte_28
-	JSR sub_C38B
-	JMP sub_C56B
-; ---------------------------------------------------------------------------
+	STA PaletteRAM_IndexHigh2Bits
+	JSR UpdateTileEditorAttributes
+	JMP UpdatePaletteValuesForDisplay
+; ---------------------------------
 
-loc_C569:
-	DEC byte_2E
+DecreasePaletteRAM_IndexLow2Bits:				; $C569
+	DEC PaletteRAM_IndexLow2Bits
 
-; =============== S U B R O U T I N E =======================================
-sub_C56B:
-	LDA byte_2E
+; =================================
+UpdatePaletteValuesForDisplay:
+	LDA PaletteRAM_IndexLow2Bits
 	AND #3
-	STA byte_2E
-	LDA byte_28
+	STA PaletteRAM_IndexLow2Bits
+	LDA PaletteRAM_IndexHigh2Bits
 	ASL A
 	ASL A
-	ORA byte_2E
-	STA byte_2F
+	ORA PaletteRAM_IndexLow2Bits
+	STA PaletteRAM_Inded
 	LDA SpriteOrBG
 	EOR #1
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	ORA byte_2F
+	ORA PaletteRAM_Inded
 	TAX
-	LDA unk_B000, X
-	STA byte_2D
+	LDA PaletteBuffer, X
+	STA Palette_Color
 	AND #$F
-	STA byte_2C
-	LDA byte_2D
+	STA Palette_Hue
+	LDA Palette_Color
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	STA byte_2B
+	STA Palette_Luminance
 	RTS
-; End of function sub_C56B
+; End of function UpdatePaletteValuesForDisplay
 
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
-loc_C596:
+PullATwiceAndReturn:				; $C596
 	PLA
 	PLA
 	RTS
-; ---------------------------------------------------------------------------
+
+; ---------------------------------
+u_C599:						; $C599 - unreferenced
 	LDA TilePicker_CursorYX
-	STA byte_E
+	STA byte_0E
 	LDA #0
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
 	ORA #$80
-	STA byte_F
+	STA byte_0F
 	LDA SpriteOrBG
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	ADC byte_F
-	STA byte_F
+	ADC byte_0F
+	STA byte_0F
 	LDA #$34
 	STA byte_10
 	LDA #0
 	STA byte_11
 	LDX #8
 
-loc_C5C3:
-	LDY #0
-	LDA (byte_E), Y
+-	LDY #0
+	LDA (byte_0E), Y
 	STA byte_B5
 	LDY #8
-	LDA (byte_E), Y
+	LDA (byte_0E), Y
 	STA byte_B6
 	JSR sub_C621
-	INC byte_E
+	INC byte_0E
 	LDA byte_10
 	CLC
 	ADC #8
 	STA byte_10
 	DEX
-	BNE loc_C5C3
+	BNE -
 	LDA #2
-	STA byte_B4
+	STA TileEditor_UpdateVRAMFlag
 	RTS
-; ---------------------------------------------------------------------------
+
+; ---------------------------------
+u_C5E3:						; $C5E3 - unreferenced
 	LDA TilePicker_CursorYX
-	STA byte_E
+	STA byte_0E
 	LDA SpriteOrBG
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
 	ORA #$80
-	STA byte_F
+	STA byte_0F
 	LDA #$34
 	STA byte_10
 	LDA #0
 	STA byte_11
 	LDX #8
 
-loc_C603:
-	JSR sub_C631
+-	JSR sub_C631
 	LDY #0
 	LDA byte_B5
-	STA (byte_E), Y
+	STA (byte_0E), Y
 	LDY #8
 	LDA byte_B6
-	STA (byte_E), Y
-	INC byte_E
+	STA (byte_0E), Y
+	INC byte_0E
 	LDA byte_10
 	CLC
 	ADC #8
 	STA byte_10
 	DEX
-	BNE loc_C603
-	INC byte_B7
+	BNE -
+	INC TilePicker_UpdateVRAMFlag
 	RTS
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 sub_C621:
 	LDY #7
-
-loc_C623:
-	LDA #0
+-	LDA #0
 	LSR byte_B6
 	ROL A
 	LSR byte_B5
 	ROL A
 	STA (byte_10), Y
 	DEY
-	BPL loc_C623
+	BPL -
 	RTS
 ; End of function sub_C621
 
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 sub_C631:
 	LDY #7
-
-loc_C633:
-	LDA (byte_10), Y
+-	LDA (byte_10), Y
 	LSR A
 	ROR byte_B5
 	LSR A
 	ROR byte_B6
 	DEY
-	BPL loc_C633
+	BPL -
 	RTS
 ; End of function sub_C631
 
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_C63F:					; $C63F - unreferenced
 	LDA #$34
 	STA byte_10
 	LDA #0
 	STA byte_11
 	LDX #8
-
-loc_C649:
-	JSR sub_C631
+--	JSR sub_C631
 	LDY #7
-
-loc_C64E:
-	LDA #0
+-	LDA #0
 	ASL byte_B6
 	ROL A
 	ASL byte_B5
 	ROL A
 	STA (byte_10), Y
 	DEY
-	BPL loc_C64E
+	BPL -
 	LDA byte_10
 	CLC
 	ADC #8
 	STA byte_10
 	DEX
-	BNE loc_C649
+	BNE --
 
-loc_C665:
+loc_C665:				; $C665
 	LDA #2
-	STA byte_B4
+	STA TileEditor_UpdateVRAMFlag
 	RTS
-; ---------------------------------------------------------------------------
+
+; ---------------------------------
+u_C66A:					; $C66A - unreferenced
 	LDA #$34
 	STA byte_10
 	LDA #0
 	STA byte_11
 	LDX #7
-
-loc_C674:
-	JSR sub_C631
+-	JSR sub_C631
 	LDA byte_B5
 	STA byte_74, X
 	LDA byte_B6
@@ -699,11 +698,10 @@ loc_C674:
 	ADC #8
 	STA byte_10
 	DEX
-	BPL loc_C674
+	BPL -
 	LDX #7
 
-loc_C68B:
-	LDA byte_10
+-	LDA byte_10
 	SEC
 	SBC #8
 	STA byte_10
@@ -713,17 +711,16 @@ loc_C68B:
 	STA byte_B6
 	JSR sub_C621
 	DEX
-	BPL loc_C68B
+	BPL -
 	JMP loc_C665
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_C6A3:					; $C6A3 - unreferenced
 	LDA #$34
 	STA byte_10
 	LDA #0
 	STA byte_11
 	LDX #8
-
-loc_C6AD:
-	JSR sub_C631
+-	JSR sub_C631
 	LDA byte_B5
 	ASL A
 	ROL byte_B5
@@ -736,17 +733,17 @@ loc_C6AD:
 	ADC #8
 	STA byte_10
 	DEX
-	BNE loc_C6AD
+	BNE -
 	JMP loc_C665
-; ---------------------------------------------------------------------------
+
+; ---------------------------------
+u_C6CA:					; $C6CA - unreferenced
 	LDA #$34
 	STA byte_10
 	LDA #0
 	STA byte_11
 	LDX #8
-
-loc_C6D4:
-	JSR sub_C631
+-	JSR sub_C631
 	LDA byte_B5
 	LSR A
 	ROR byte_B5
@@ -759,49 +756,44 @@ loc_C6D4:
 	ADC #8
 	STA byte_10
 	DEX
-	BNE loc_C6D4
+	BNE -
 	JMP loc_C665
-; ---------------------------------------------------------------------------
-	LDX #7
 
-loc_C6F3:
-	LDA TileEditor_Buffer, X
+; ---------------------------------
+u_C6F1:					; $C6F1 - unreferenced
+	LDX #7
+-	LDA TileEditor_Buffer, X
 	STA byte_74, X
 	DEX
-	BPL loc_C6F3
+	BPL -
 	LDX #0
-
-loc_C6FC:
-	LDA TileEditor_Buffer + 8, X
+-	LDA TileEditor_Buffer + 8, X
 	STA TileEditor_Buffer, X
 	INX
 	CPX #$40
-	BNE loc_C6FC
+	BNE -
 	JMP loc_C665
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_C708:					; $C708 - unreferenced
 	LDX #$3F
-
-loc_C70A:
-	LDA TileEditor_Buffer, X
+-	LDA TileEditor_Buffer, X
 	STA TileEditor_Buffer + 8, X
 	DEX
-	BPL loc_C70A
+	BPL -
 	LDX #7
-
-loc_C713:
-	LDA byte_74, X
+-	LDA byte_74, X
 	STA TileEditor_Buffer, X
 	DEX
-	BPL loc_C713
+	BPL -
 	JMP loc_C665
 
-; =============== S U B R O U T I N E =======================================
-IRQ_Original:
+
+; =================================
+IRQ_Original:			; $C71D
 	RTI
 
-
-; =============== S U B R O U T I N E =======================================
-NMI_Original:
+; =================================
+NMI_Original:			; $C71E
 	PHA
 	TXA
 	PHA
@@ -813,34 +805,32 @@ NMI_Original:
 	STA OAM_DMA
 	LDA #1
 	STA NMIFlag
-	LDA byte_B4
-	BEQ loc_C73D
-	JSR sub_C86D
+	LDA TileEditor_UpdateVRAMFlag
+	BEQ +
+	JSR UpdateTileEditorVRAM
 	JSR SetPPUAddressTo2000
-	DEC byte_B4
+	DEC TileEditor_UpdateVRAMFlag
 
-loc_C73D:
-	LDA byte_B7
-	BEQ loc_C746
-	JSR ResetPPUADDR
-	DEC byte_B7
++	LDA TilePicker_UpdateVRAMFlag
+	BEQ +
+	JSR UpdateTilePickerVRAM
+	DEC TilePicker_UpdateVRAMFlag
 
-loc_C746:
-	LDA PPUScrollX
++	LDA PPUScrollY
 	ASL A
 	LDA #0
 	ROL A
 	TAX
-	LDA PPUScrollY
+	LDA PPUScrollX
 	ASL A
 	TXA
 	ROL A
 	ORA PPUCtrlMirror
 	STA PPUCTRL
-	LDA PPUScrollY
+	LDA PPUScrollX
 	ASL A
 	STA PPUSCROLL
-	LDA PPUScrollX
+	LDA PPUScrollY
 	ASL A
 	STA PPUSCROLL
 	LDX #0
@@ -856,10 +846,10 @@ loc_C746:
 ; End of function NMI_2
 
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 
 
-ReadJoypad:
+ReadJoypad:				; $C772
 	                    ; NMI_2+4Bp
 	LDA #1
 	STA JOY1
@@ -869,90 +859,83 @@ ReadJoypad:
 	LDA #0
 	STA JoypadState1, X
 
-loc_C782:
-	LDA JOY1, X
+-	LDA JOY1, X
 	LSR A
 	ROL JoypadState1, X
 	DEY
-	BNE loc_C782
+	BNE -
+
 	LDA JoypadState1, X
 	CMP JoypadState2, X
 	STA JoypadState2, X
-	BEQ loc_C79C
+	BEQ +
 	LDA #0
 	STA JoypadState3, X
 	LDA #$FF
 	STA JoypadRepeatTimer, X
 	RTS
-; ---------------------------------------------------------------------------
 
-loc_C79C:
-	LDY JoypadRepeatTimer, X
-	BEQ loc_C7B0
-	BMI loc_C7A9
++	LDY JoypadRepeatTimer, X
+	BEQ ++
+	BMI +
 	DEC JoypadRepeatTimer, X
 	LDA #0
 	STA JoypadState3, X
 	RTS
-; ---------------------------------------------------------------------------
 
-loc_C7A9:
-	STA JoypadState3, X
++	STA JoypadState3, X
 	LDA #$A
 	STA JoypadRepeatTimer, X
 	RTS
-; ---------------------------------------------------------------------------
 
-loc_C7B0:
-	STA JoypadState3, X
+++	STA JoypadState3, X
 	LDA #2
 	STA JoypadRepeatTimer, X
 	RTS
 ; End of function ReadJoypad
 
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 
 
-WaitForNMI:
+WaitForNMI:				; $C7B7
 	LDA #0
 	STA NMIFlag
-
-loc_C7BB:
-	LDA NMIFlag
-	BEQ loc_C7BB
+-	LDA NMIFlag
+	BEQ -
 	RTS
 ; End of function WaitForNMI
 
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 
-
-MysteryHardwareInterface:
+; Interacts with unknown hardware
+; $401E: Output?
+; $4019: Status?
+; $4018: Data?
+; Returns data in A
+QueryMysteryHardware:	; $C7C0
 	LDA #0
-	STA byte_401E
+	STA byte_401E		; ? Send device command?
 
-loc_C7C5:
-	LDA byte_4019
+-	LDA byte_4019		; ? Check device status?
 	AND #$C0
 	CMP #$80
-	BNE loc_C7C5
-	LDA byte_4018
-	PHA
-	LDA #$40
-	STA byte_401E
+	BNE -				; ? Not ready, loop?
+	LDA byte_4018		; ? Device response?
+	PHA					; Save response
+	LDA #$40			; ? Load next command?
+	STA byte_401E		; ? Send command?
 
-loc_C7D7:
-	LDA byte_4019
+-	LDA byte_4019		; ? Check device status?
 	AND #$80
-	BNE loc_C7D7
-	PLA
+	BNE -				; ? Wait for device acknowledge?
+	PLA					; Pull response
 	RTS
-; End of function MysteryHardwareInterface
 
 
-; =============== S U B R O U T I N E =======================================
-sub_C7E0:
+; =================================
+ClearBGAndSprites:		; $C7E0
 	LDA #$20
 	STA PPUADDR
 	LDA #0
@@ -960,69 +943,61 @@ sub_C7E0:
 	LDX #4
 	LDY #0
 	LDA TileEditor_SolidTileNumber
-
-loc_C7F0:
-	                    ; sub_C7E0+17j
-	STA PPUDATA
+-	STA PPUDATA
 	INY
-	BNE loc_C7F0
+	BNE -
 	DEX
-	BNE loc_C7F0
+	BNE -
 	LDA #$23
 	STA PPUADDR
 	LDA #$C0
 	STA PPUADDR
 	LDY #$40
-	LDX byte_28
-	LDA unk_C248+1, X
-
-loc_C80A:
-	STA PPUDATA
+	LDX PaletteRAM_IndexHigh2Bits
+	LDA Palette_NametableAttributes, X
+-	STA PPUDATA
 	DEY
-	BNE loc_C80A
+	BNE -
 	LDA #$F0
 	LDX #0
-
-loc_C814:
-	STA byte_200, X
+-	STA byte_200, X
 	INX
-	BNE loc_C814
+	BNE -
 	RTS
-; End of function sub_C7E0
+; End of function ClearBGAndSprites
 
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_C81B:					; $C81B - unreferenced
 	LDA #$4C
-	STA byte_E
+	STA byte_0E
 	LDA #$20
-	STA byte_F
+	STA byte_0F
 	LDA #$10
 	STA byte_15
 	LDA #0
 	STA byte_14
 
-loc_C82B:
-	LDA byte_F
+--	LDA byte_0F
 	STA PPUADDR
-	LDA byte_E
+	LDA byte_0E
 	STA PPUADDR
 	LDX #$10
 
-loc_C837:
-	LDA byte_14
+-	LDA byte_14
 	STA PPUDATA
 	INC byte_14
 	DEX
-	BNE loc_C837
-	LDA byte_E
+	BNE -
+
+	LDA byte_0E
 	CLC
 	ADC #$20
-	STA byte_E
-	BCC loc_C84C
-	INC byte_F
+	STA byte_0E
+	BCC +
+	INC byte_0F
++	DEC byte_15
+	BNE --
 
-loc_C84C:
-	DEC byte_15
-	BNE loc_C82B
 	LDA #$21
 	STA PPUADDR
 	LDA #$E4
@@ -1038,63 +1013,61 @@ loc_C84C:
 	STX PPUDATA
 	RTS
 
-; =============== S U B R O U T I N E =======================================
-sub_C86D:
+; =================================
+UpdateTileEditorVRAM:	; $C86D
 	CMP #1
-	BNE loc_C87D
+	BNE +
+
 	LDA #2
 	STA byte_18
 	LDA #$21
 	STA byte_19
 	LDA #$20
-	BNE loc_C887
+	BNE ++
 
-loc_C87D:
-	LDA #$82
++	LDA #$82
 	STA byte_18
 	LDA #$20
 	STA byte_19
 	LDA #0
 
-loc_C887:
-	STA byte_1A
+++	STA byte_1A
 	LDA #4
 	STA byte_1B
 
-loc_C88D:
-	LDA byte_19
+--	LDA byte_19
 	STA PPUADDR
 	LDA byte_18
 	STA PPUADDR
 	LDY #8
 
-loc_C899:
-	LDX byte_1A
+-	LDX byte_1A
 	LDA TileEditor_Buffer, X
 	SEC
 	ADC TileEditor_SolidTileNumber
 	STA PPUDATA
 	INC byte_1A
 	DEY
-	BNE loc_C899
+	BNE -
+
 	LDA byte_18
 	CLC
 	ADC #$20
 	STA byte_18
-	BCC loc_C8B3
+	BCC +
 	INC byte_19
 
-loc_C8B3:
-	DEC byte_1B
-	BNE loc_C88D
++	DEC byte_1B
+	BNE --
+
 	RTS
-; End of function sub_C86D
+; End of function UpdateTileEditorVRAM
 
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 
 
-ResetPPUADDR:
+UpdateTilePickerVRAM:		; $C8B8
 	LDA TilePicker_CursorYX
 	STA byte_18
 	LDA SpriteOrBG
@@ -1116,16 +1089,14 @@ ResetPPUADDR:
 	STA PPUADDR
 	LDY #0
 
-loc_C8DE:
-	LDA (byte_18), Y
+-	LDA (byte_18), Y
 	STA PPUDATA
 	INY
 	CPY #$10
-	BNE loc_C8DE
-; End of function ResetPPUADDR
+	BNE -
 
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 SetPPUAddressTo2000:
 	LDA #$20
 	STA PPUADDR
@@ -1134,7 +1105,8 @@ SetPPUAddressTo2000:
 	RTS
 ; End of function SetPPUAddressTo2000
 
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_C8F3:					; $C8F3 - unreferenced
 	LDA byte_29
 	ASL A
 	STA byte_30
@@ -1148,41 +1120,39 @@ SetPPUAddressTo2000:
 	LDA #8
 	STA byte_15
 
-loc_C909:
+loc_C909:				; $C909 (used for branch below)
 	LDX #$A0
 	LDA byte_31
 	CMP #$1E
-	BCC loc_C915
+	BCC +
 	LDX #$A8
 	SBC #$1E
 
-loc_C915:
-	STX byte_F
-	STA byte_E
++	STX byte_0F
+	STA byte_0E
 	LDA #0
-	ASL byte_E
-	ASL byte_E
-	ASL byte_E
+	ASL byte_0E
+	ASL byte_0E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
 	CLC
-	ADC byte_F
-	STA byte_F
+	ADC byte_0F
+	STA byte_0F
 	LDA byte_30
 	CLC
-	ADC byte_E
-	STA byte_E
-	BCC loc_C938
-	INC byte_F
+	ADC byte_0E
+	STA byte_0E
+	BCC +
+	INC byte_0F
 
-loc_C938:
-	SEC
++	SEC
 	SBC #$20
 	STA byte_10
-	LDA byte_F
+	LDA byte_0F
 	SBC #0
 	CLC
 	ADC #4
@@ -1190,27 +1160,25 @@ loc_C938:
 	LDA #$20
 	SEC
 	SBC byte_30
-	BEQ loc_C95B
+	BEQ +
+
 	STA byte_14
 	LDY #0
-
-loc_C951:
-	LDA (byte_E), Y
+-	LDA (byte_0E), Y
 	STA (byte_12), Y
 	INY
 	CPY byte_14
-	BCC loc_C951
+	BCC -
+
 	TYA
++	TAY
 
-loc_C95B:
-	TAY
-
-loc_C95C:
-	LDA (byte_10), Y
+-	LDA (byte_10), Y
 	STA (byte_12), Y
 	INY
 	CPY #$20
-	BCC loc_C95C
+	BCC -
+
 	LDA byte_12
 	CLC
 	ADC #$20
@@ -1234,46 +1202,44 @@ loc_C95C:
 	LDA #0
 	STA byte_16
 
-loc_C98E:
+loc_C98E:				; $C98E (used for branch below)
 	LDX #0
 	LDA byte_30
 	STA byte_14
 	SEC
 	SBC #$10
-	BCC loc_C99C
+	BCC +
+
 	STA byte_14
 	INX
 
-loc_C99C:
-	LDA byte_31
++	LDA byte_31
 	STA byte_15
 	SEC
 	SBC #$F
-	BCC loc_C9A9
+	BCC +
+
 	STA byte_15
 	INX
 	INX
 
-loc_C9A9:
-	LDA #$C0
-	STA byte_E
++	LDA #$C0
+	STA byte_0E
 	LDA byte_CA6A, X
-	STA byte_F
+	STA byte_0F
 	LDX #0
 	LDA byte_14
 	LSR A
-	BCC loc_C9BA
+	BCC +
 	INX
 
-loc_C9BA:
-	LDA byte_15
++	LDA byte_15
 	LSR A
-	BCC loc_C9C1
+	BCC +
 	INX
 	INX
 
-loc_C9C1:
-	LDA byte_15
++	LDA byte_15
 	AND #$FE
 	ASL A
 	ASL A
@@ -1282,34 +1248,31 @@ loc_C9C1:
 	LSR A
 	ORA byte_17
 	TAY
-	LDA (byte_E), Y
+	LDA (byte_0E), Y
 	AND byte_CA6E, X
 	LDY byte_CA72, X
-	BEQ loc_C9DD
+	BEQ +
 
-loc_C9D9:
-	LSR A
+-	LSR A
 	DEY
-	BNE loc_C9D9
+	BNE -
 
-loc_C9DD:
-	LDX byte_16
++	LDX byte_16
 	STA byte_410, X
 	INC byte_16
 	INC byte_30
 	LDA byte_30
 	CMP byte_32
-	BCC loc_C98E
+	BCC loc_C98E		; branch target above
 	LDA byte_29
 	STA byte_30
 	INC byte_31
 	LDA byte_31
 	CMP byte_33
-	BCC loc_C98E
+	BCC loc_C98E		; branch target above
 	LDX #$F
 
-loc_C9FA:
-	LDY byte_CAA6, X
+-	LDY byte_CAA6, X
 	LDA byte_410, Y
 	ASL A
 	ASL A
@@ -1335,7 +1298,8 @@ loc_C9FA:
 	ORA byte_410, Y
 	STA byte_400, X
 	DEX
-	BPL loc_C9FA
+	BPL -
+
 	JSR WaitForNMI
 	LDA #0
 	STA PPUMASK
@@ -1345,28 +1309,29 @@ loc_C9FA:
 	LDA #$80
 	STA PPUADDR
 
-loc_CA40:
-	LDA byte_300, X
+-	LDA byte_300, X
 	STA PPUDATA
 	INX
-	BNE loc_CA40
+	BNE -
+
 	LDA #$23
 	STA PPUADDR
 	LDA #$E8
 	STA PPUADDR
 
-loc_CA53:
-	LDA byte_400, X
+-	LDA byte_400, X
 	STA PPUDATA
 	INX
 	CPX #$10
-	BNE loc_CA53
+	BNE -
+
 	JSR WaitForNMI
 	JSR SetPPUAddressTo2000
 	LDA PPUMaskMirror
 	STA PPUMASK
 	RTS
-; ---------------------------------------------------------------------------
+
+; ---------------------------------
 byte_CA6A:
 	.db $A3,$A7,$AB,$AF
 byte_CA6E:
@@ -1382,8 +1347,9 @@ byte_CA96:
 byte_CAA6:
 	.db $11,$13,$15,$17,$19,$1B,$1D,$1F,$31,$33,$35,$37,$39,$3B,$3D,$3F
 
-; ---------------------------------------------------------------------------
-	LDA byte_25
+; ---------------------------------
+u_CAB6:					; $CAB6 - unreferenced
+	LDA TilePicker_CursorY
 	ASL A
 	ASL A
 	ASL A
@@ -1411,7 +1377,7 @@ byte_CAA6:
 	LDA #0
 	STA byte_21A
 	STA byte_21E
-	LDA byte_25
+	LDA TilePicker_CursorY
 	ASL A
 	ASL A
 	ASL A
@@ -1419,7 +1385,9 @@ byte_CAA6:
 	STA byte_204
 	LDA #1
 	STA byte_205
-	LDX $802			; BUG!
+	LDX $802			; BUG! - tries to cycle cursor color via $0802 instead of $0206
+						; (load $0802, add 1, AND #$03, store at $0206)
+
 	INX
 	TXA
 	AND #3
@@ -1431,9 +1399,10 @@ byte_CAA6:
 	ADC #$60
 	STA byte_207
 	RTS
-; ---------------------------------------------------------------------------
-	LDA EditMode
-	BNE loc_CB3A
+; ---------------------------------
+u_CB12:					; $CB12 - unreferenced
+	LDA TileOrPaletteMode
+	BNE +
 	LDA TileEditor_CursorY
 	ASL A
 	ASL A
@@ -1454,10 +1423,8 @@ byte_CAA6:
 	AND #3
 	STA byte_202
 	RTS
-; ---------------------------------------------------------------------------
 
-loc_CB3A:
-	LDA byte_27
++	LDA byte_27
 	ASL A
 	ASL A
 	ASL A
@@ -1551,63 +1518,60 @@ loc_CB3A:
 	STA byte_229
 	RTS
 
-; =============== S U B R O U T I N E =======================================
+; =================================
 sub_CC04:
 	LDX #$FF
 
-loc_CC06:
-	SEC
+-	SEC
 	SBC #$A
 	INX
-	BCS loc_CC06
+	BCS -
 	ADC #$A
 	RTS
-; End of function sub_CC04
 
-; ---------------------------------------------------------------------------
+
+; ---------------------------------
 LoadGraphics:
 	LDX #0              ; Load tileset graphics into PPU mem
 	STX PPUADDR
 	STX PPUADDR
 
-loc_CC17:
-	LDA chr_CC3C, X
+-	LDA CHR_Row1, X
 	STA PPUDATA
 	INX
-	BNE loc_CC17
+	BNE -
 
-loc_CC20:
-	LDA chr_CD3C, X
+-	LDA CHR_Row2, X
 	STA PPUDATA
 	INX
-	BNE loc_CC20
+	BNE -
 
-loc_CC29:
-	LDA chr_CE3C, X
+-	LDA CHR_Row3, X
 	STA PPUDATA
 	INX
-	BNE loc_CC29
+	BNE -
 
-loc_CC32:
-	LDA chr_CF3C, X
+	; Mild bug: copies garbage past the end of CHR data
+-	LDA CHR_Row4, X
 	STA PPUDATA
 	INX
-	BNE loc_CC32
+	BNE -
 	RTS
-; ---------------------------------------------------------------------------
+; ---------------------------------
 
 .include "src/data/chr.asm"
 
-; ---------------------------------------------------------------------------
+; ---------------------------------
+u_CF84:				; $CF84
 	LDA SpriteOrBG
 	ASL A
 	ASL A
 	ASL A
 	ASL A
 	ORA #$80
-	STA byte_F
+	STA byte_0F
 	LDA #0
-	STA byte_E
+	STA byte_0E
 	LDA #$10
 	STA PPUADDR
 	LDA #0
@@ -1616,63 +1580,71 @@ loc_CC32:
 	LDA #$10
 	STA byte_14
 
-loc_CFA2:
-	LDA (byte_E), Y
+-	LDA (byte_0E), Y
 	STA PPUDATA
 	INY
-	BNE loc_CFA2
-	INC byte_F
+	BNE -
+	INC byte_0F
 	DEC byte_14
-	BNE loc_CFA2
+	BNE -
 	RTS
-; ---------------------------------------------------------------------------
+
+; ---------------------------------
+
+u_CFB1:					; $CFB1 - unreferenced
 	LDA TileEditor_SolidTileNumber
-	STA byte_E
+	STA byte_0E
 	LDA #0
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	ASL byte_E
+	ASL byte_0E
 	ROL A
-	STA byte_F
+	STA byte_0F
 	ORA #$10
 	STA PPUADDR
-	LDA byte_E
+	LDA byte_0E
 	STA PPUADDR
 	LDX #0
 
-loc_CFD1:
-	LDA unk_D008, X
+-	LDA lost_data_D008, X
 	STA PPUDATA
 	INX
 	CPX #$50
-	BNE loc_CFD1
+	BNE -
+
 	LDA SpriteOrBG
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	ORA byte_F
-	STA byte_F
+	ORA byte_0F
+	STA byte_0F
 	LDY #$4F
 
-loc_CFE8:
-	LDA (byte_E), Y
+-	LDA (byte_0E), Y
 	STA byte_450, Y
 	DEY
-	BPL loc_CFE8
+	BPL -
+
 	LDA #$F
 	STA PPUADDR
 	LDA #$B0
 	STA PPUADDR
 	LDY #0
 	LDA byte_450, Y
-; ---------------------------------------------------------------------------
-	.db $8D ; ì           ; End of unused segment
+	; STA ????
+	.db $8D				; data truncated :(
+	; ???		; $D000
+	; ???		; $D001
+	; ???		; $D002
+	; ???		; $D003
+	; ???		; $D004
+	; ???		; $D005
+	; ???		; $D006
+	; ???		; $D007
 
-; $D000 ------------
-
-	; should be STA ...
+; lost_data_D008: (lost data))
