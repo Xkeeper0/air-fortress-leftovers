@@ -2,42 +2,41 @@
 
 loc_C05D	= $C05D
 unk_C248	= $C248
-; unk_B000	= $B000
-unk_B000	= $C400
+unk_B000	= $B000
 unk_D008	= $D008
 
 
 ; ---------------------------------------------------------------------------
 
 
-	LDA byte_21
+	LDA TileEditor_CursorX
 	CMP #7
 	BEQ locret_C2E5
-	INC byte_21
+	INC TileEditor_CursorX
 
 locret_C2E5:
 	RTS
 ; ---------------------------------------------------------------------------
-	LDA byte_21
+	LDA TileEditor_CursorX
 	BEQ locret_C2E5
-	DEC byte_21
+	DEC TileEditor_CursorX
 	RTS
 ; ---------------------------------------------------------------------------
 
 loc_C2ED:
-	LDA byte_22
+	LDA TileEditor_CursorY
 	CMP #7
 	BEQ locret_C2E5
-	INC byte_22
+	INC TileEditor_CursorY
 	RTS
 ; ---------------------------------------------------------------------------
-	LDA byte_22
+	LDA TileEditor_CursorY
 	BEQ locret_C2E5
-	DEC byte_22
+	DEC TileEditor_CursorY
 	RTS
 ; ---------------------------------------------------------------------------
 	LDA #0
-	STA byte_21
+	STA TileEditor_CursorX
 	BEQ loc_C2ED
 	LDA #0
 	BEQ loc_C311
@@ -49,19 +48,19 @@ loc_C2ED:
 
 loc_C311:
 	TAY
-	LDA byte_22
+	LDA TileEditor_CursorY
 	ASL A
 	ASL A
 	ASL A
-	ORA byte_21
+	ORA TileEditor_CursorX
 	TAX
-	STY byte_34, X
+	STY TileEditor_Buffer, X
 	LDA #2
 	STA byte_B4
-	LDA byte_21
+	LDA TileEditor_CursorX
 	CMP #7
 	BEQ locret_C328
-	INC byte_21
+	INC TileEditor_CursorX
 
 locret_C328:
 	RTS
@@ -78,7 +77,7 @@ loc_C337:
 	LDX #$3F
 
 loc_C339:
-	STA byte_34, X
+	STA TileEditor_Buffer, X
 	DEX
 	BPL loc_C339
 	LDA #2
@@ -95,22 +94,22 @@ loc_C339:
 
 loc_C351:
 	STA byte_14
-	LDA byte_22
+	LDA TileEditor_CursorY
 	ASL A
 	ASL A
 	ASL A
-	ORA byte_21
+	ORA TileEditor_CursorX
 	TAX
-	LDA byte_34, X
+	LDA TileEditor_Buffer, X
 	STA byte_15
 	LDX #$3F
 
 loc_C361:
-	LDA byte_34, X
+	LDA TileEditor_Buffer, X
 	CMP byte_14
 	BNE loc_C36E
 	LDA byte_15
-	STA byte_34, X
+	STA TileEditor_Buffer, X
 	JMP loc_C376
 ; ---------------------------------------------------------------------------
 
@@ -118,7 +117,7 @@ loc_C36E:
 	CMP byte_15
 	BNE loc_C376
 	LDA byte_14
-	STA byte_34, X
+	STA TileEditor_Buffer, X
 
 loc_C376:
 	DEX
@@ -290,9 +289,9 @@ loc_C447:
 loc_C44F:
 	JMP loc_C05D+1
 ; ---------------------------------------------------------------------------
-	LDA byte_D
+	LDA SpriteOrBG
 	EOR #1
-	STA byte_D
+	STA SpriteOrBG
 	JMP loc_C05D+1
 ; ---------------------------------------------------------------------------
 	LDA byte_25
@@ -301,7 +300,7 @@ loc_C44F:
 	ASL A
 	ASL A
 	ORA #$B
-	STA byte_1F
+	STA TileEditor_SolidTileNumber
 	JMP loc_C05D+1
 ; ---------------------------------------------------------------------------
 	JSR sub_C56B
@@ -428,7 +427,7 @@ loc_C500:
 	ASL A
 	ORA byte_2C
 	STA byte_2D
-	LDA byte_D
+	LDA SpriteOrBG
 	EOR #1
 	ASL A
 	ASL A
@@ -457,7 +456,7 @@ loc_C52C:
 	STA PPUADDR
 	LDA #0
 	STA PPUADDR
-	LDA byte_D
+	LDA SpriteOrBG
 	EOR #1
 	ASL A
 	ASL A
@@ -509,7 +508,7 @@ sub_C56B:
 	ASL A
 	ORA byte_2E
 	STA byte_2F
-	LDA byte_D
+	LDA SpriteOrBG
 	EOR #1
 	ASL A
 	ASL A
@@ -537,7 +536,7 @@ loc_C596:
 	PLA
 	RTS
 ; ---------------------------------------------------------------------------
-	LDA byte_23
+	LDA TilePicker_CursorYX
 	STA byte_E
 	LDA #0
 	ASL byte_E
@@ -550,7 +549,7 @@ loc_C596:
 	ROL A
 	ORA #$80
 	STA byte_F
-	LDA byte_D
+	LDA SpriteOrBG
 	ASL A
 	ASL A
 	ASL A
@@ -582,9 +581,9 @@ loc_C5C3:
 	STA byte_B4
 	RTS
 ; ---------------------------------------------------------------------------
-	LDA byte_23
+	LDA TilePicker_CursorYX
 	STA byte_E
-	LDA byte_D
+	LDA SpriteOrBG
 	ASL byte_E
 	ROL A
 	ASL byte_E
@@ -766,15 +765,15 @@ loc_C6D4:
 	LDX #7
 
 loc_C6F3:
-	LDA byte_34, X
+	LDA TileEditor_Buffer, X
 	STA byte_74, X
 	DEX
 	BPL loc_C6F3
 	LDX #0
 
 loc_C6FC:
-	LDA byte_3C, X
-	STA byte_34, X
+	LDA TileEditor_Buffer + 8, X
+	STA TileEditor_Buffer, X
 	INX
 	CPX #$40
 	BNE loc_C6FC
@@ -783,15 +782,15 @@ loc_C6FC:
 	LDX #$3F
 
 loc_C70A:
-	LDA byte_34, X
-	STA byte_3C, X
+	LDA TileEditor_Buffer, X
+	STA TileEditor_Buffer + 8, X
 	DEX
 	BPL loc_C70A
 	LDX #7
 
 loc_C713:
 	LDA byte_74, X
-	STA byte_34, X
+	STA TileEditor_Buffer, X
 	DEX
 	BPL loc_C713
 	JMP loc_C665
@@ -960,7 +959,7 @@ sub_C7E0:
 	STA PPUADDR
 	LDX #4
 	LDY #0
-	LDA byte_1F
+	LDA TileEditor_SolidTileNumber
 
 loc_C7F0:
 	                    ; sub_C7E0+17j
@@ -1028,7 +1027,7 @@ loc_C84C:
 	STA PPUADDR
 	LDA #$E4
 	STA PPUADDR
-	LDX byte_1F
+	LDX TileEditor_SolidTileNumber
 	INX
 	STX PPUDATA
 	INX
@@ -1071,9 +1070,9 @@ loc_C88D:
 
 loc_C899:
 	LDX byte_1A
-	LDA byte_34, X
+	LDA TileEditor_Buffer, X
 	SEC
-	ADC byte_1F
+	ADC TileEditor_SolidTileNumber
 	STA PPUDATA
 	INC byte_1A
 	DEY
@@ -1096,9 +1095,9 @@ loc_C8B3:
 
 
 ResetPPUADDR:
-	LDA byte_23
+	LDA TilePicker_CursorYX
 	STA byte_18
-	LDA byte_D
+	LDA SpriteOrBG
 	ASL byte_18
 	ROL A
 	ASL byte_18
@@ -1390,7 +1389,7 @@ byte_CAA6:
 	ASL A
 	ASL A
 	ORA byte_24
-	STA byte_23
+	STA TilePicker_CursorYX
 	LDA #$67
 	STA byte_218
 	STA byte_21C
@@ -1398,14 +1397,14 @@ byte_CAA6:
 	STA byte_21B
 	LDA #$40
 	STA byte_21F
-	LDA byte_23
+	LDA TilePicker_CursorYX
 	LSR A
 	LSR A
 	LSR A
 	LSR A
 	ORA #$10
 	STA byte_219
-	LDA byte_23
+	LDA TilePicker_CursorYX
 	AND #$F
 	ORA #$10
 	STA byte_21D
@@ -1435,13 +1434,13 @@ byte_CAA6:
 ; ---------------------------------------------------------------------------
 	LDA EditMode
 	BNE loc_CB3A
-	LDA byte_22
+	LDA TileEditor_CursorY
 	ASL A
 	ASL A
 	ASL A
 	ADC #$1F
 	STA byte_200
-	LDA byte_21
+	LDA TileEditor_CursorX
 	ASL A
 	ASL A
 	ASL A
@@ -1600,7 +1599,7 @@ loc_CC32:
 .include "src/data/chr.asm"
 
 ; ---------------------------------------------------------------------------
-	LDA byte_D
+	LDA SpriteOrBG
 	ASL A
 	ASL A
 	ASL A
@@ -1627,7 +1626,7 @@ loc_CFA2:
 	BNE loc_CFA2
 	RTS
 ; ---------------------------------------------------------------------------
-	LDA byte_1F
+	LDA TileEditor_SolidTileNumber
 	STA byte_E
 	LDA #0
 	ASL byte_E
@@ -1651,7 +1650,7 @@ loc_CFD1:
 	INX
 	CPX #$50
 	BNE loc_CFD1
-	LDA byte_D
+	LDA SpriteOrBG
 	ASL A
 	ASL A
 	ASL A

@@ -19,7 +19,7 @@ JoypadRepeatTimer:	; $000B
 	.dsb 2
 
 
-byte_D:		; $D
+SpriteOrBG:		; $D
 	.dsb 1
 byte_E:		; $E
 	.dsb 1
@@ -53,17 +53,17 @@ byte_1C:		; $1C
 	.dsb 1
 word_1D:		; $1D
 	.dsb 2
-byte_1F:		; $1F
+TileEditor_SolidTileNumber:		; $1F
 	.dsb 1
 
 EditMode:		; $0020
 	.dsb 1
 
-byte_21:		; $21
+TileEditor_CursorX:		; $21
 	.dsb 1
-byte_22:		; $22
+TileEditor_CursorY:		; $22
 	.dsb 1
-byte_23:		; $23
+TilePicker_CursorYX:		; $23
 	.dsb 1
 byte_24:		; $24
 	.dsb 1
@@ -97,17 +97,9 @@ byte_32:		; $32
 	.dsb 1
 byte_33:		; $33
 	.dsb 1
-byte_34:		; $33
-	.dsb 1
-	.dsb 1
-	.dsb 1
-	.dsb 1
-	.dsb 1
-	.dsb 1
-	.dsb 1
-	.dsb 1
-byte_3C:		; $3C
-	.dsb 1
+TileEditor_Buffer:		; $34
+	; "64 bytes, 2 bits per pixel"
+	.dsb 64
 
 .pad $0074, $00
 byte_74:		; $74
