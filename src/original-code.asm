@@ -51,20 +51,25 @@ MoveCursorUp:		; $C2F6 - unreferenced
 	DEC TileEditor_CursorY
 	RTS
 ; ---------------------------------
-u_C2FD				; $C2FD - unreferenced
+u_C2FD:				; $C2FD - unreferenced
 	LDA #0
 	STA TileEditor_CursorX
 	BEQ MoveCursorDown
+
+; ---------------------------------
+u_C303:				; $C303 - unreferenced
 	LDA #0
-	BEQ loc_C311
+	BEQ +
+u_C307:				; $C307 - unreferenced
 	LDA #1
-	BNE loc_C311
+	BNE +
+u_C30B:				; $C30B - unreferenced
 	LDA #2
-	BNE loc_C311
+	BNE +
+u_C30F:				; $C30F - unreferenced
 	LDA #3
 
-loc_C311:				; $C311			; $C311
-	TAY
++	TAY
 	LDA TileEditor_CursorY
 	ASL A
 	ASL A
