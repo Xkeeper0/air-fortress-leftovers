@@ -239,20 +239,20 @@ unk_C40C:
 	.db   8
 	.db $21
 JumpTable_C40C_Lo:
-	.db <IncrasePPUScrollY
+	.db <IncreasePPUScrollY
 	.db <DecreasePPUScrollX
 	.db <DecreasePPUScrollY
 	.db <IncreasePPUScrollX
 	.db <ResetPPUScrollAndDie
 JumpTable_C415_Hi:
-	.db >IncrasePPUScrollY
+	.db >IncreasePPUScrollY
 	.db >DecreasePPUScrollX
 	.db >DecreasePPUScrollY
 	.db >IncreasePPUScrollX
 	.db >ResetPPUScrollAndDie
 ; ---------------------------------
 
-IncrasePPUScrollY:				; $C41B
+IncreasePPUScrollY:				; $C41B
 	INC PPUScrollY
 	LDA PPUScrollY
 	CMP #$78
